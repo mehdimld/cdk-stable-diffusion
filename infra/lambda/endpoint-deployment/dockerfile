@@ -1,0 +1,5 @@
+FROM public.ecr.aws/lambda/python:3.9-arm64
+COPY cr_lambda_sagemaker_endpoint.py ${LAMBDA_TASK_ROOT}
+COPY requirements.txt  .
+RUN python3.9 -m pip install -r requirements.txt
+CMD ["cr_lambda_sagemaker_endpoint.on_event"] 

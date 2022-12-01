@@ -1,0 +1,13 @@
+venv
+infra/*.swp
+infra/package-lock.json
+infra/__pycache__
+infra/.pytest_cache
+infra/.venv
+infra/*.egg-info
+
+# CDK asset staging directory
+infra/.cdk.staging
+infra/cdk.out
+
+stable-diffusion-v1-4/
