@@ -48,8 +48,8 @@ Some info related to these commands:
 - cdk deploy HuggingFaceModelEndpoint will deploy: a SageMaker HuggingFace Model and deploy it to a dedicated SageMaker Endpoint. Be aware that this deployment take about 7 minutes. 
 
 Your infrastructure is now ready you can start to play with it : 
-    - Go to the s3 bucket and in the input-audiofiles-bucket upload any .mp3 file 
-    - Wait for 1-2 minutes and you'll see the output of your speech-to-image generator in the bucket named output-images-bucket. 
+- Go to the s3 bucket and in the input-audiofiles-bucket upload any .mp3 file 
+- Wait for 1-2 minutes and you'll see the output of your speech-to-image generator in the bucket named output-images-bucket. 
     
 ## Next Steps : 
 - Adding a frontend. 
