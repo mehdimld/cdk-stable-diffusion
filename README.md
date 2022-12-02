@@ -14,8 +14,6 @@ This project aims to deploy aws resources via cdk to have a speech-to-image appl
 
 ### Requirements:
 - pip & Python3 installed
-- T
-
 ### Steps to follow : 
 - First step is to clone this repo.
 - You'll need to upload the Stable Diffusion model from HuggingFace Hub (https://huggingface.co/CompVis/stable-diffusion-v1-4). 
