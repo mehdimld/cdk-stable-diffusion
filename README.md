@@ -1,23 +1,32 @@
-# TechAssignment
+# Speech-to-Image Using Stable Diffusion on AWS
 
 ## Description
-- The lambda directory contains : 
-    - a dockerfile with the base image, the packages to install, and the function handler
-    - The lambda function which takes as input the event triggered by the file set to the s3 bucket.
-    - The requirements
-Its main role is to collect the text data of the file that has triggered it, pass them to the stable diffusion model built thanks to the sagemaker endpoint, predict images and store them in another s3 bucket.
+This project aims to deploy aws resources via cdk to have a speech-to-image application on your aws account. In order to do so the following resources are provisionned : 
 
-## Temporary solution to push a new version of the lambda : 
-You need to have docker and aws-cli installed with your credentials properly configured.
-[This tutorial](https://docs.aws.amazon.com/lambda/latest/dg/images-create.html) is helpful. As we've built everything in eu-west-3, below are the command we can use to deploy the new container lambda image: 
-<pre><code>aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin TheAWSAccountID.dkr.ecr.eu-west-3.amazonaws.com
-docker build -t techassignment .
-docker tag techassignment:latest TheAWSAccountID.dkr.ecr.eu-west-3.amazonaws.com/stablediffusion
-docker push TheAWSAccountID.dkr.ecr.eu-west-3.amazonaws.com/stablediffusion</code></pre>
-Then the docker container build locally is available on ECR and you can manually deploy a new version of the lambda throught : 
-lambda >> image >> deploy new image >> select the latest image in the ecr repository named stablediffusion.
+## How to use this repo : 
 
-## Next steps :
-- Adding the cdk stacks in the "infra" folder. The terraform part of [This tutorial](https://dev.to/aws-builders/your-own-stable-diffusion-endpoint-with-aws-sagemaker-1534) is super helpful as well as what is in the file aws-needed-resources.txt
-- Adding the stable-diffusion model localy but not to the remote repository for file sizes and licensing reasons. 
-- Adding the Sagemaker part : zip-model >> Create endpoint >> Use Endpoint (not sure if this one is really needed)
+### Requirements 
+
+### Steps to follow : 
+
+- First create a venv and install the requirements
+- You'll need to upload the Stable Diffusion model form HuggingFace Hub (https://huggingface.co/CompVis/stable-diffusion-v1-4). For that create a free account on their website, get a token and follow the following steps: 
+    git lfs install
+    git clone https://huggingface.co/CompVis/stable-diffusion-v1-4
+- Now you can go on with the cdk steps : 
+    - cd to infra 
+    - cdk bootstrap
+    - cdk deploy InfraStack will deploy transcribe pipelines, all the required s3 bucket (model hosting, input audiofiles, output transcribed json, output generated html file.)
+    - run the following command to upload the model you got from HuggingFace to the freshly deployed s3 bucket that hosts the : 
+        - sh ../sagemaker/zip-model.sh
+    - cdk deploy HuggingFaceModelEndpoint will deploy: a SageMaker HuggingFace Model and deploy it to a dedicated SageMaker Endpoint. Be aware that this deployment take about 7 minutes. 
+- Your infra is not ready you can start to play with it : 
+    - Go to the s3 bucket and in the input-audiofiles directory upload any .mp3 file 
+    - Wait for 1-2 minutes and you'll see the output of your speech-to-image generator in the bucket named output-images-bucket. 
+
+## Next Steps : 
+- Remove zip-model.sh script and refacto to use aws-s3-assets
+- Check if it works without the custom inference script
+- Set up venv at the right place.
+- Adding a frontend
+- Serverless endpoint ?
