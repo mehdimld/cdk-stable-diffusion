@@ -1,26 +1,17 @@
 from aws_cdk import (
-    aws_logs as logs,
     aws_lambda as _lambda,
     aws_iam as _iam,
     Duration as _Duration,
     CustomResource,
     Stack,
-    Environment, 
-    BundlingOptions,
-    CfnOutput,
 )
-import os
-import uuid
-from sagemaker.huggingface.model import HuggingFaceModel
-from sagemaker.huggingface.model import HuggingFacePredictor
 
-from sagemaker import Session, get_execution_role
-import boto3
 from aws_cdk.custom_resources import (
     Provider
 )
 
 from constructs import Construct
+from resources import MODEL_DATA_BUCKET_NAME, INFERENCE_SAGEMAKER_ENDPOINT_NAME, MODEL_DATA_ARCHIVE_NAME
 
 class HuggingFaceModelEndpoint(Stack):
 
@@ -74,8 +65,8 @@ class HuggingFaceModelEndpoint(Stack):
                                                      service_token=huggingface_model_endpoint_provider.service_token,
                                                      resource_type='Custom::HuggingFaceModelEndpoint', 
                                                      properties={
-                                                        'EndpointName' : 'huggingface-pytorch-inference',
-                                                        'ModelData' : f"s3://stable-diffusion-ml-model-bucket/sdv1-4_model.tar.gz",
+                                                        'EndpointName' : INFERENCE_SAGEMAKER_ENDPOINT_NAME,
+                                                        'ModelData' : "s3://{}/{}".format(MODEL_DATA_BUCKET_NAME,MODEL_DATA_ARCHIVE_NAME),
                                                         "Role" : execution_role.role_arn
                                                      })
-        CfnOutput(self, "HFEndPointName", value=huggingface_model_endpoint.get_att("EndpointName").to_string(), export_name='HFEndpointName')
+                                                     

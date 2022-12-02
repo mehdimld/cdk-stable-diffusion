@@ -1,7 +1,5 @@
-import boto3
 from sagemaker.huggingface.model import HuggingFaceModel
 from sagemaker.huggingface.model import HuggingFacePredictor
-import uuid
 
 
 def clean_props(**props):
@@ -45,9 +43,7 @@ def on_update(event):
 
 def on_delete(event):
     props = clean_props(**event["ResourceProperties"])
-    endpoint_name = props.get("EndpointName")
-    client = boto3.client("sagemaker")
-    
+    endpoint_name = props.get("EndpointName")    
     predictor = HuggingFacePredictor(endpoint_name=endpoint_name)
     predictor.delete_model()
     predictor.delete_endpoint()

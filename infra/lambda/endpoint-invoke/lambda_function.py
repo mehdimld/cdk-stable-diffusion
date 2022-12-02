@@ -11,12 +11,13 @@ import re
 import os
 
 ENDPOINT_NAME = os.environ['endpoint_name']
+OUTPUT_BUCKET_NAME = os.environ['output_bucket_name']
 # Body Template to generate the html file
 BODY_TEMPLATE = '<html><head></head><body><img src="data:image/png;base64,IMAGE"/><br><h3>PROMPT</h3></body></html>'
 
 # Config of the sagemaker session
 config = Config(read_timeout=30, retries={
-                "max_attempts": 0}, region_name='eu-west-3')
+                "max_attempts": 0})
 sagemaker_runtime_client = boto3.client("sagemaker-runtime", config=config)
 sagemaker_session = Session(sagemaker_runtime_client=sagemaker_runtime_client)
 # Creating a HuggingFacePredictor based on the model deployed in the Endpoint
@@ -48,6 +49,7 @@ def lambda_handler(event, context):
     input_key = unquote_plus(
         event['Records'][0]['s3']['object']['key'], encoding='utf-8')
     print(input_key, input_bucket)
+    # replace it by setting suffix in the notification. 
     if input_key.split('.')[1] == 'json': 
         obj = s3.Object(input_bucket, input_key)
         data = obj.get()['Body']
@@ -59,7 +61,7 @@ def lambda_handler(event, context):
         output_body = BODY_TEMPLATE.replace("IMAGE", res["data"]).replace(
             "PROMPT", res["prompt"])
         s3_client.put_object(
-            Bucket='stable-diffusion-output-bucket',
+            Bucket=OUTPUT_BUCKET_NAME,
             Key=output_key,
             Body=output_body,
             CacheControl="max-age=0,no-cache,no-store,must-revalidate",

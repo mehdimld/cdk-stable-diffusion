@@ -4,7 +4,7 @@ import os
 import aws_cdk as cdk
 
 from infra_stack import InfraStack
-from cr_sagemaker_endpoint import HuggingFaceModelEndpoint
+from hugging_face_stack import HuggingFaceModelEndpoint
 
 app = cdk.App()
 InfraStack(app, "InfraStack",env=cdk.Environment(region='eu-west-1'))
