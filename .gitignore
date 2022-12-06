@@ -10,6 +10,6 @@ infra/*.egg-info
 infra/.cdk.staging
 infra/cdk.out
 
-stable-diffusion-v1-4/*
+stable-diffusion-v1-4/
 
 .DS_Store

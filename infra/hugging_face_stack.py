@@ -42,10 +42,10 @@ class HuggingFaceModelEndpoint(Stack):
             "iam:PassRole",
         ]
         
-        execution_role = _iam.Role(self, "hf_sagemaker_execution_role", assumed_by=_iam.ServicePrincipal("sagemaker.amazonaws.com"))
+        execution_role = _iam.Role(self, "hf_sagemaker_execution_role_{}".format(self.region), assumed_by=_iam.ServicePrincipal("sagemaker.amazonaws.com"))
         execution_role.add_to_policy(_iam.PolicyStatement(resources=["*"], actions=iam_sagemaker_actions))
         
-        lambda_role = _iam.Role(self, "cr_lambda_hf_execution_role", assumed_by=_iam.ServicePrincipal("lambda.amazonaws.com"))
+        lambda_role = _iam.Role(self, "cr_lambda_hf_execution_role_{}".format(self.region), assumed_by=_iam.ServicePrincipal("lambda.amazonaws.com"))
         lambda_role.add_to_policy(_iam.PolicyStatement(resources=["*"], actions=iam_sagemaker_actions))
 
         huggingface_model_endpoint_handler = _lambda.DockerImageFunction(self, "HuggingFaceModelEndpointCustomResourceHandler",
@@ -61,12 +61,13 @@ class HuggingFaceModelEndpoint(Stack):
 
         huggingface_model_endpoint_provider = Provider(self, "HuggingFaceModelEndpointProvider", 
                                               on_event_handler= huggingface_model_endpoint_handler)
+
         huggingface_model_endpoint = CustomResource(self, "HuggingFaceModelEndpoint", 
                                                      service_token=huggingface_model_endpoint_provider.service_token,
                                                      resource_type='Custom::HuggingFaceModelEndpoint', 
                                                      properties={
                                                         'EndpointName' : INFERENCE_SAGEMAKER_ENDPOINT_NAME,
-                                                        'ModelData' : "s3://{}/{}".format(MODEL_DATA_BUCKET_NAME,MODEL_DATA_ARCHIVE_NAME),
+                                                        'ModelData' : "s3://{}.{}.{}/{}".format(MODEL_DATA_BUCKET_NAME, self.account, self.region, MODEL_DATA_ARCHIVE_NAME),
                                                         "Role" : execution_role.role_arn
                                                      })
                                                      
