@@ -21,6 +21,8 @@ For that create a free account on their website, get a token and back to your lo
 
 ```
 git lfs install
+mkdir stable-diffusion-v1-4
+cd stable-diffusion-v1-4
 git clone https://huggingface.co/CompVis/stable-diffusion-v1-4 > stable-diffusion-v1-4
 ```
 
