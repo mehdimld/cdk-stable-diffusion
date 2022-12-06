@@ -24,17 +24,17 @@ class InfraStack(Stack):
                                             code=_lambda.Code.from_asset(
                                                 './lambda/transcribe'),
                                             handler='transcribe.lambda_handler', 
-                                            environment={"OutputBucketName": OUTPUT_TRANSCRIBED_BUCKET_NAME})
+                                            environment={"OutputBucketName": "{}.{}.{}".format(OUTPUT_TRANSCRIBED_BUCKET_NAME, self.account, self.region)})
 
         # Define the Input S3 bucket ressource
         StableDiffusionAudioFileBucket = _s3.Bucket(self, "StableDiffusionAudioFileBucket",
-                                                    bucket_name=INPUT_AUDIO_FILES_BUCKET_NAME,
+                                                    bucket_name="{}.{}.{}".format(INPUT_AUDIO_FILES_BUCKET_NAME, self.account, self.region),
                                                     block_public_access=_s3.BlockPublicAccess.BLOCK_ALL,
                                                     auto_delete_objects=True,
                                                     removal_policy=RemovalPolicy.DESTROY)
         
         StableDiffusionTranscribedFileBucket = _s3.Bucket(self, "StableDiffusionTranscribedFileBucket",
-                                                    bucket_name=OUTPUT_TRANSCRIBED_BUCKET_NAME,
+                                                    bucket_name="{}.{}.{}".format(OUTPUT_TRANSCRIBED_BUCKET_NAME, self.account, self.region),
                                                     block_public_access=_s3.BlockPublicAccess.BLOCK_ALL,
                                                     auto_delete_objects=True,
                                                     removal_policy=RemovalPolicy.DESTROY)
@@ -46,8 +46,8 @@ class InfraStack(Stack):
                 's3:GetObject',
             ],
             resources=[
-                'arn:aws:s3:::{}/*'.format(INPUT_AUDIO_FILES_BUCKET_NAME),
-                'arn:aws:s3:::{}/*'.format(OUTPUT_TRANSCRIBED_BUCKET_NAME)  
+                'arn:aws:s3:::{}.{}.{}/*'.format(INPUT_AUDIO_FILES_BUCKET_NAME, self.account, self.region),
+                'arn:aws:s3:::{}.{}.{}/*'.format(OUTPUT_TRANSCRIBED_BUCKET_NAME, self.account, self.region)
             ],
         ))
 
@@ -73,7 +73,7 @@ class InfraStack(Stack):
 
         # Create s3 bucket to upload the model.
         stableDiffusionModelBucket = _s3.Bucket(self, "stableDiffusionModelBucket",
-                                                bucket_name=MODEL_DATA_BUCKET_NAME,
+                                                bucket_name="{}.{}.{}".format(MODEL_DATA_BUCKET_NAME, self.account, self.region),
                                                 access_control=_s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
                                                 encryption=_s3.BucketEncryption.S3_MANAGED,
                                                 block_public_access=_s3.BlockPublicAccess.BLOCK_ALL,
@@ -82,7 +82,7 @@ class InfraStack(Stack):
 
         # Create s3 bucket for output images
         stableDiffusionOutputImagesBucket = _s3.Bucket(self, "stableDiffusionOutputImagesBucket",
-                                                       bucket_name=OUTPUT_IMAGES_BUCKET_NAME,
+                                                       bucket_name="{}.{}.{}".format(OUTPUT_IMAGES_BUCKET_NAME, self.account, self.region),
                                                        access_control=_s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
                                                        encryption=_s3.BucketEncryption.S3_MANAGED,
                                                        block_public_access=_s3.BlockPublicAccess.BLOCK_ALL,
@@ -97,7 +97,7 @@ class InfraStack(Stack):
                                                                       timeout=_Duration.seconds(
                                                                           60),
                                                                       environment={"endpoint_name": INFERENCE_SAGEMAKER_ENDPOINT_NAME, 
-                                                                                    "output_bucket_name": OUTPUT_IMAGES_BUCKET_NAME})
+                                                                                    "output_bucket_name": "{}.{}.{}".format(OUTPUT_IMAGES_BUCKET_NAME, self.account, self.region)})
 
         # Attach Policy to Lambda to Put object on the output bucket
         stableDiffusionPredictionLambda.add_to_role_policy(_iam.PolicyStatement(
@@ -106,7 +106,7 @@ class InfraStack(Stack):
                 's3:PutObject',
             ],
             resources=[
-                'arn:aws:s3:::{}/*'.format(OUTPUT_IMAGES_BUCKET_NAME),
+                'arn:aws:s3:::{}.{}.{}/*'.format(OUTPUT_IMAGES_BUCKET_NAME, self.account, self.region),
             ],
         ))
 
@@ -118,7 +118,7 @@ class InfraStack(Stack):
                 's3:GetObject',
             ],
             resources=[
-                'arn:aws:s3:::{}/*'.format(OUTPUT_TRANSCRIBED_BUCKET_NAME),
+                'arn:aws:s3:::{}.{}.{}/*'.format(OUTPUT_TRANSCRIBED_BUCKET_NAME, self.account, self.region)
             ],
         ))
         stableDiffusionPredictionLambda.add_to_role_policy(_iam.PolicyStatement(
