@@ -50,12 +50,6 @@ Some info related to these commands:
 Your infrastructure is now ready you can start to play with it : 
 - Upload any .mp3 file to the input-audiofiles-bucket
 - Wait for 1-2 minutes and you'll see the output of your speech-to-image generator in the bucket named output-images-bucket. 
-    
-## Next Steps : 
-- Adding a frontend. 
-- Exploring Serverless endpoint ? For now not possible because of GPU Inference. 
-- Custom resources for the s3 bucket that hosts model data ? 
-- The diffusers may soon be accessible in SageMaker directly from the HuggingFace Hub. So that you can create HuggingFaceModel object with the sagemaker sdk just by providing the HF_TASK, HF_MODEL_ID and your HF_TOKEN. When available we would no longer need to create the model from data uploaded to s3.
 
 ## Other information: 
 - The default region for deploying the aws resources in these repo is eu-west-1. Be aware that the default quota for gd4n.xlarge instances are not the same across regions, so it may requires you to request the support for a quota increase in sagemaker endpoint instance of size gd4n.xlarge 
